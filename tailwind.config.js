@@ -34,6 +34,9 @@ module.exports = {
         'button-primary': '#4F80FF',
         'button-secondary': '#E0C8FF',
       },
+      spacing: {
+        '9/10': '90%',
+      }
     },
   },
   plugins: [],

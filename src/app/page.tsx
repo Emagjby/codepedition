@@ -14,7 +14,7 @@ export default function Home() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="py-16 px-6 md:px-16 flex flex-col md:flex-row items-center">
+      <section className=" py-16 px-6 md:px-16 flex flex-col md:flex-row items-center">
         <div className="md:w-1/2 space-y-6">
           <p className="uppercase text-gray-500 tracking-wider text-sm">INTERACTIVE LEARNING PLATFORM</p>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
@@ -268,28 +268,36 @@ export default function Home() {
       </section>
       
       {/* Testimonials Section */}
-      <section className="py-16 px-6 md:px-16 bg-gray-50 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Testimonials</h2>
-        <p className="text-gray-600 mb-12">What our learners say about their code expedition journey</p>
-        
-        <div className="grid md:grid-cols-3 gap-8">
-          <Testimonial 
-            quote="Since implementing the roadmap approach, I've seen significant growth in my coding skills."
-            name="Sarah Chen"
-            role="Self-taught Developer"
-          />
+      <section className="py-20 px-6 md:px-16 bg-gradient-to-b from-gray-50 to-white relative z-0">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h3 className="uppercase text-gray-500 font-medium tracking-wider text-sm mb-2">TESTIMONIALS</h3>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">What Our Learners Say</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">Hear from developers who have accelerated their careers with our interactive learning approach</p>
+          </div>
           
-          <Testimonial 
-            quote="I recommend Codepedition to everyone trying to learn to code in a structured but enjoyable way."
-            name="Michael Rodriguez"
-            role="Bootcamp Graduate"
-          />
-          
-          <Testimonial 
-            quote="I can't imagine learning web development without the gamified quests and project challenges."
-            name="Emily Jackson"
-            role="Career Switcher"
-          />
+          <div className="grid md:grid-cols-3 gap-8 h-full">
+            <Testimonial 
+              quote="The interactive roadmap approach completely changed how I learn. I've built 6 projects for my portfolio and landed a junior dev role within 3 months."
+              name="Sarah Chen"
+              role="Frontend Developer at Acme Inc."
+              rating={5}
+            />
+            
+            <Testimonial 
+              quote="After my bootcamp, I felt lost on what to learn next. Codepedition's structured path and gamified challenges kept me motivated and filled my knowledge gaps."
+              name="Michael Rodriguez"
+              role="Full Stack Developer"
+              rating={5}
+            />
+            
+            <Testimonial 
+              quote="As someone switching careers at 35, I needed a practical approach. The project-based learning gave me real skills I use daily in my new dev job."
+              name="Emily Jackson"
+              role="Backend Developer at TechCorp"
+              rating={5}
+            />
+          </div>
         </div>
       </section>
       

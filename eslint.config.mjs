@@ -9,8 +9,11 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-];
+const eslintConfig = {
+  extends: [
+    ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ],
+  ignorePatterns: ['node_modules/lucide-react/**/*'], // Correct placement of ignorePatterns
+};
 
 export default eslintConfig;
