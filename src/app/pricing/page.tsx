@@ -6,6 +6,7 @@ import Footer from "../../components/Footer";
 import PricingCard from "../../components/PricingCard";
 import FeatureCard from "../../components/FeatureCard";
 import FAQItem from "../../components/FAQItem";
+import GetStarted from "../../components/GetStarted";
 import { CheckCircle, XCircle } from "lucide-react";
 
 // Define the feature data for reusability and easier maintenance
@@ -132,7 +133,7 @@ export default function Pricing() {
             
             <FeatureCard 
               title="Pro"
-              price="$15.99/month"
+              price="$14.99/month"
               description="Great for: Those who want to turn learning into results — and prove their skills"
               features={proFeatures}
             />
@@ -184,34 +185,11 @@ export default function Pricing() {
       </section>
       
       {/* Get Started Section */}
-      <section className="py-16 px-6 md:px-16">
-        <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="md:flex">
-            <div className="p-8 md:p-12 md:w-1/2">
-              <h2 className="text-2xl md:text-3xl font-bold mb-4">Your code expedition starts today</h2>
-              <p className="text-gray-600 mb-6">Join thousands of developers on their interactive learning journey with Codepedition.</p>
-              <Link href="/signup" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md inline-block">
-                Start your free trial
-              </Link>
-            </div>
-            <div className="md:w-1/2 relative">
-              <div className="h-full flex items-center justify-center p-8">
-                <div className="grid grid-cols-4 gap-2">
-                  {[...Array(12)].map((_, i) => (
-                    <div 
-                      key={i} 
-                      className={`w-8 h-14 rounded-full ${
-                        i % 3 === 0 ? 'bg-blue-500' : 
-                        i % 3 === 1 ? 'bg-orange-500' : 'bg-gray-300'
-                      }`}
-                    ></div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <GetStarted 
+        title="Your code expedition starts today"
+        description="Join thousands of developers on their interactive learning journey with Codepedition."
+        buttonText="Start your free trial"
+      />
       
       {/* Footer */}
       <Footer />

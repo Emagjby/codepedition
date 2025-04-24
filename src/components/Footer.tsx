@@ -30,8 +30,6 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-gray-500">
               <li><Link href="/about" className="hover:text-blue-600 cursor-pointer">About us</Link></li>
               <li><Link href="/contact" className="hover:text-blue-600 cursor-pointer">Contact</Link></li>
-              <li><Link href="/blog" className="hover:text-blue-600 cursor-pointer">Blog</Link></li>
-              <li><Link href="/careers" className="hover:text-blue-600 cursor-pointer">Careers</Link></li>
             </ul>
           </div>
           

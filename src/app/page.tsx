@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import PathCard from "../components/PathCard";
 import Testimonial from "../components/Testimonial";
+import GetStarted from "../components/GetStarted";
 
 export default function Home() {
   return (
@@ -302,38 +303,11 @@ export default function Home() {
       </section>
       
       {/* CTA Section */}
-      <section className="py-16 px-6 md:px-16">
-        <div className="bg-white rounded-xl shadow-lg p-8 md:p-12 flex flex-col md:flex-row items-center">
-          <div className="md:w-2/3 space-y-4 md:pr-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Begin your coding journey today
-            </h2>
-            <p className="text-gray-600">
-              Join thousands of developers building portfolio-ready skills in a fun and structured way.
-            </p>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md mt-4 cursor-pointer">
-              Start 7-day free trial
-            </button>
-          </div>
-          <div className="md:w-1/3 mt-8 md:mt-0 flex justify-center">
-            {/* Placeholder for 3D figures */}
-            <div className="relative w-48 h-48">
-              <div className="grid grid-cols-4 gap-1">
-                {[...Array(16)].map((_, i) => (
-                  <div 
-                    key={i} 
-                    className={`w-6 h-12 rounded-full ${
-                      i % 3 === 0 ? 'bg-blue-500' : 
-                      i % 3 === 1 ? 'bg-orange-500' : 'bg-gray-700'
-                    }`}
-                  ></div>
-                ))}
-              </div>
-              <div className="absolute top-1/4 right-1/4 w-8 h-14 bg-black rounded-md transform rotate-6"></div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <GetStarted 
+        title="Begin your coding journey today"
+        description="Join thousands of developers building portfolio-ready skills in a fun and structured way."
+        buttonText="Start 7-day free trial"
+      />
       
       {/* Footer */}
       <Footer />
