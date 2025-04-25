@@ -147,7 +147,7 @@ export default function Pricing() {
           </div>
           
           <div className="mt-12 text-center">
-            <Link href="/signup" className="inline-flex items-center justify-center py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors shadow-md hover:shadow-lg">
+            <Link href="/auth/register" className="inline-flex items-center justify-center py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors shadow-md hover:shadow-lg">
               Start your journey today
             </Link>
           </div>

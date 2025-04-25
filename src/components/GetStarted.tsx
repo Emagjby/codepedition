@@ -11,7 +11,7 @@ export default function GetStarted({
   title,
   description,
   buttonText,
-  buttonLink = "/signup"
+  buttonLink = "/auth/register"
 }: GetStartedProps) {
   return (
     <section className="py-16 px-6 md:px-16 bg-gray-50">

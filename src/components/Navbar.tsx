@@ -18,8 +18,8 @@ export default function Navbar() {
       </div>
       
       <div className="flex items-center space-x-4">
-        <Link href="/login" className={`${pathname === '/login' ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'} cursor-pointer`}>Log in</Link>
-        <Link href="/signup" className={`${pathname === '/signup' ? 'bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'} text-white px-4 py-2 rounded-md cursor-pointer`}>Sign up</Link>
+        <Link href="/auth/login" className={`${pathname === '/auth/login' ? 'text-blue-600' : 'text-gray-600 hover:text-blue-600'} cursor-pointer`}>Log in</Link>
+        <Link href="/auth/register" className={`${pathname === '/auth/register' ? 'bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'} text-white px-4 py-2 rounded-md cursor-pointer`}>Sign up</Link>
       </div>
     </nav>
   );

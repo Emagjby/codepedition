@@ -25,9 +25,9 @@ export default function Home() {
             An interactive coding platform that turns roadmaps into quests, challenges, and real-world projects.
           </p>
           <div className="flex space-x-4 pt-4">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md cursor-pointer">
+            <Link href="/auth/register" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md cursor-pointer inline-block">
               Start free trial
-            </button>
+            </Link>
             <button className="border border-gray-300 hover:border-blue-600 px-6 py-3 rounded-md cursor-pointer">
               Explore roadmaps
             </button>
@@ -183,9 +183,9 @@ export default function Home() {
             challenges, and quests. You don't just consume content—you practice, build, and level up 
             with real-world code tasks.
           </p>
-          <button className="border border-gray-300 hover:border-blue-600 px-4 py-2 rounded-md mt-2 cursor-pointer">
+          <Link href="/auth/register" className="border border-gray-300 hover:border-blue-600 px-4 py-2 rounded-md mt-2 cursor-pointer inline-block">
             Start your journey
-          </button>
+          </Link>
         </div>
       </section>
       
@@ -236,9 +236,9 @@ export default function Home() {
             <p className="text-gray-600">
               Follow these 3 simple steps to begin your learning journey with us.
             </p>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-4 cursor-pointer">
+            <Link href="/auth/register" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-4 cursor-pointer inline-block">
               Get started
-            </button>
+            </Link>
           </div>
           <div className="md:w-1/2 mt-8 md:mt-0">
             <div className="space-y-6">
