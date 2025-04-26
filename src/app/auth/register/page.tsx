@@ -1,20 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useRef } from "react";
 import Navbar from "../../../components/Navbar";
 import Footer from "../../../components/Footer";
+import { signup } from "./actions";
 
 export default function Register() {
+  const formRef = useRef<HTMLFormElement>(null);
+
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
     confirmPassword: ""
   });
   
   const [errors, setErrors] = useState({
-    name: "",
     email: "",
     password: "",
     confirmPassword: ""
@@ -26,20 +27,10 @@ export default function Register() {
   const validateForm = () => {
     let isValid = true;
     const newErrors = {
-      name: "",
       email: "",
       password: "",
       confirmPassword: ""
     };
-    
-    // Name validation
-    if (formData.name.trim().length < 5) {
-      newErrors.name = "Username must be at least 5 characters";
-      isValid = false;
-    } else if (/\s/.test(formData.name)) {
-      newErrors.name = "Username cannot contain spaces";
-      isValid = false;
-    }
     
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -89,20 +80,29 @@ export default function Register() {
     }
   };
   
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       setIsSubmitting(true);
-      
-      // Here you would integrate with your registration service
-      console.log("Registration form submitted:", formData);
-      
-      // Simulate API call
-      setTimeout(() => {
+      try {
+        const formDataObj = new FormData();
+
+        formDataObj.append('email', formData.email);
+        formDataObj.append('password', formData.password);
+        formDataObj.append('confirmPassword', formData.confirmPassword);
+
+        const terms = document.getElementById('terms') as HTMLInputElement;
+        formDataObj.append('terms', terms.checked ? 'true' : 'false');
+
+        await signup(formDataObj);
         setIsSubmitting(false);
         setIsSubmitted(true);
-      }, 1000);
+      } catch (error) {
+        setIsSubmitting(false);
+        console.error('Signup failed', error);
+        // Handle any error during signup (e.g., display error message)
+      }
     }
   };
   
@@ -141,21 +141,7 @@ export default function Register() {
                     Join our community of learners today.
                   </p>
                   
-                  <form className="space-y-6" onSubmit={handleSubmit} noValidate>
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="Username"
-                        className={`w-full px-4 py-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-blue-500 focus:border-blue-500`}
-                      />
-                      {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
-                    </div>
-                    
+                  <form className="space-y-6" onSubmit={handleSubmit} ref={formRef} noValidate>                    
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                       <input

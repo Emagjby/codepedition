@@ -14,7 +14,8 @@ export const config = {
      * - Favicon and other media files
      * - Public routes that don't need authentication
      * - API routes that handle their own authentication
+     * - Root path (landing page)
      */
-    '/((?!_next/static|_next/image|favicon.ico|api/public|public|landing|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/public|public|landing|$|pricing|about|contact|invited|terms|privacy|cookies|auth/*|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

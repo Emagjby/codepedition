@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useRef } from "react";
 import Navbar from "../../../components/Navbar";
 import Footer from "../../../components/Footer";
+import { login } from './actions';
 
 export default function Login() {
+  const formRef = useRef<HTMLFormElement>(null);
+
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -58,20 +61,24 @@ export default function Login() {
     }
   };
   
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (validateForm()) {
       setIsSubmitting(true);
-      
-      // Here you would integrate with your authentication service
-      console.log("Login form submitted:", formData);
-      
-      // Simulate API call
-      setTimeout(() => {
+      try {
+        const formDataObj = new FormData();
+
+        formDataObj.append('email', formData.email);
+        formDataObj.append('password', formData.password);
+
+        await login(formDataObj);
         setIsSubmitting(false);
-        // Redirect or show success message
-      }, 1000);
+      } catch (error) {
+        setIsSubmitting(false);
+        console.error('Signup failed', error);
+        // Handle any error during signup (e.g., display error message)
+      }
     }
   };
   
@@ -133,7 +140,7 @@ export default function Login() {
                   </div>
                   
                   <div className="text-sm">
-                    <Link href="/forgotten-password" className="font-medium text-blue-600 hover:text-blue-500">
+                    <Link href="/auth/forgotten-password" className="font-medium text-blue-600 hover:text-blue-500">
                       Forgot password?
                     </Link>
                   </div>
