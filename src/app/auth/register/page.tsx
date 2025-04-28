@@ -5,9 +5,11 @@ import { useState, ChangeEvent, FormEvent, useRef } from "react";
 import Navbar from "../../../components/Navbar";
 import Footer from "../../../components/Footer";
 import { signup } from "./actions";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
   const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -18,18 +20,21 @@ export default function Register() {
   const [errors, setErrors] = useState({
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    terms: ""
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [serverError, setServerError] = useState("");
   
   const validateForm = () => {
     let isValid = true;
     const newErrors = {
       email: "",
       password: "",
-      confirmPassword: ""
+      confirmPassword: "",
+      terms: ""
     };
     
     // Email validation
@@ -60,23 +65,46 @@ export default function Register() {
       isValid = false;
     }
     
+    // Terms validation
+    const terms = document.getElementById('terms') as HTMLInputElement;
+    if (!terms.checked) {
+      newErrors.terms = "You must agree to the Terms and Privacy Policy";
+      isValid = false;
+    }
+    
     setErrors(newErrors);
     return isValid;
   };
   
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    const { name, value, type, checked } = e.target;
     
-    // Clear error when typing
-    if (errors[name as keyof typeof errors]) {
-      setErrors(prev => ({
+    if (type === 'checkbox') {
+      // Clear checkbox error when checked
+      if (checked && errors[name as keyof typeof errors]) {
+        setErrors(prev => ({
+          ...prev,
+          [name]: ""
+        }));
+      }
+    } else {
+      setFormData(prev => ({
         ...prev,
-        [name]: ""
+        [name]: value
       }));
+      
+      // Clear error when typing
+      if (errors[name as keyof typeof errors]) {
+        setErrors(prev => ({
+          ...prev,
+          [name]: ""
+        }));
+      }
+    }
+    
+    // Clear server error when user makes changes
+    if (serverError) {
+      setServerError("");
     }
   };
   
@@ -85,6 +113,8 @@ export default function Register() {
 
     if (validateForm()) {
       setIsSubmitting(true);
+      setServerError("");
+      
       try {
         const formDataObj = new FormData();
 
@@ -95,13 +125,35 @@ export default function Register() {
         const terms = document.getElementById('terms') as HTMLInputElement;
         formDataObj.append('terms', terms.checked ? 'true' : 'false');
 
-        await signup(formDataObj);
+        const result = await signup(formDataObj);
+        
+        // Check if the result is a success object
+        if (result && typeof result === 'object' && 'success' in result) {
+          if (result.redirectTo) {
+            // If there's a redirect path, go there directly
+            router.push(result.redirectTo);
+            return;
+          }
+          
+          // Otherwise show the success message
+          setIsSubmitting(false);
+          setIsSubmitted(true);
+          return;
+        }
+        
+        // Check if the result contains an error message
+        if (result && typeof result === 'string') {
+          if (result.includes('already registered')) {
+            setServerError("This email is already registered. Try logging in instead.");
+          } else {
+            setServerError(result);
+          }
+        }
         setIsSubmitting(false);
-        setIsSubmitted(true);
       } catch (error) {
         setIsSubmitting(false);
         console.error('Signup failed', error);
-        // Handle any error during signup (e.g., display error message)
+        setServerError("Something went wrong. Please try again later.");
       }
     }
   };
@@ -140,6 +192,12 @@ export default function Register() {
                   <p className="text-gray-600 text-center mb-8">
                     Join our community of learners today.
                   </p>
+                  
+                  {serverError && (
+                    <div className="mb-6 p-3 bg-red-50 border border-red-300 text-red-700 rounded-md">
+                      {serverError}
+                    </div>
+                  )}
                   
                   <form className="space-y-6" onSubmit={handleSubmit} ref={formRef} noValidate>                    
                     <div>
@@ -184,16 +242,25 @@ export default function Register() {
                       {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}
                     </div>
                     
-                    <div className="flex items-center">
-                      <input
-                        id="terms"
-                        name="terms"
-                        type="checkbox"
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      />
-                      <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-                        I agree to the <Link href="/terms" className="text-blue-600 hover:underline">Terms</Link> and <Link href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>
-                      </label>
+                    <div className="flex items-start">
+                      <div className="flex items-center h-5">
+                        <input
+                          id="terms"
+                          name="terms"
+                          type="checkbox"
+                          onChange={handleChange}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          required
+                        />
+                      </div>
+                      <div className="ml-3 text-sm">
+                        <label htmlFor="terms" className="text-gray-700">
+                          I agree to the <Link href="/terms" className="text-blue-600 hover:underline">Terms</Link> and <Link href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>
+                        </label>
+                        {errors.terms && (
+                          <p className="mt-1 text-sm text-red-500">{errors.terms}</p>
+                        )}
+                      </div>
                     </div>
                     
                     <button
