@@ -90,3 +90,92 @@ export async function login(formData: FormData) {
     redirect(redirectPath)
   }
 }
+
+export async function sendMagicLink(formData: FormData) {
+  const supabase = await createClient()
+  const email = formData.get('email') as string
+  
+  console.log("Server action: sendMagicLink called with email:", email)
+  
+  // Validate email
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    console.log("Server action: Email validation failed")
+    return 'Please enter a valid email address'
+  }
+  
+  try {
+    // Get the domain without any path
+    const domain = process.env.NEXT_PUBLIC_SITE_URL || 'https://codepedition.com'
+    console.log(`Server action: Using domain for magic link: ${domain}`)
+    
+    console.log(`Server action: Sending magic link to ${email}`)
+    
+    const { data, error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: domain + '/auth/magic'
+      }
+    })
+    
+    if (error) {
+      console.error('Server action: Magic link error:', error.message)
+      return 'Error sending magic link: ' + error.message
+    }
+    
+    console.log("Server action: Magic link sent successfully", data)
+    
+    // Success
+    return { success: true, message: 'Magic link sent! Check your email.' }
+  } catch (err) {
+    console.error('Server action: Unexpected error sending magic link:', err)
+    return 'Unexpected error sending magic link: ' + err
+  }
+}
+
+export async function signInWithOAuth(formData: FormData) {
+  const provider = formData.get('provider') as string
+  
+  if (!provider) {
+    return 'No provider specified'
+  }
+  
+  try {
+    const supabase = await createClient()
+    // Get the domain without any path
+    const domain = process.env.NEXT_PUBLIC_SITE_URL || 'https://codepedition.com'
+    console.log(`Server action: OAuth sign in with ${provider}, redirecting to ${domain}/auth/callback`)
+    
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: provider as 'google' | 'github',
+      options: {
+        redirectTo: `${domain}/auth/callback`
+      }
+    })
+    
+    if (error) {
+      console.error(`Server action: OAuth error with ${provider}:`, error.message)
+      // Redirect back to login page with error message
+      const searchParams = new URLSearchParams();
+      searchParams.set('error', `Error signing in with ${provider}: ${error.message}`);
+      redirect(`/auth/login?${searchParams.toString()}`);
+    }
+    
+    // If successful, the data will contain a URL to redirect the user to
+    if (data?.url) {
+      console.log(`Server action: Redirecting to OAuth provider URL: ${data.url}`)
+      redirect(data.url)
+    } else {
+      console.error(`Server action: No URL returned from OAuth attempt with ${provider}`)
+      // Redirect back to login page with error message
+      const searchParams = new URLSearchParams();
+      searchParams.set('error', `Error signing in with ${provider}: No redirect URL returned`);
+      redirect(`/auth/login?${searchParams.toString()}`);
+    }
+  } catch (err) {
+    console.error(`Server action: Unexpected error during OAuth sign in with ${provider}:`, err)
+    // Redirect back to login page with error message
+    const searchParams = new URLSearchParams();
+    searchParams.set('error', `Unexpected error signing in with ${provider}`);
+    redirect(`/auth/login?${searchParams.toString()}`);
+  }
+}

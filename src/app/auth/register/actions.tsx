@@ -3,69 +3,99 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 
-export async function signup(formData: FormData) {
+export async function register(formData: FormData) {
   const supabase = await createClient()
-
+  
+  // Extract data from form
+  const name = formData.get('name') as string
   const email = formData.get('email') as string
   const password = formData.get('password') as string
-  const terms = formData.get('terms') as string
-
-  // Check if terms were agreed to
-  if (terms !== 'true') {
-    return 'You must agree to the Terms and Privacy Policy to create an account.'
+  
+  if (!name || !email || !password) {
+    return { 
+      success: false, 
+      error: 'Missing required fields' 
+    }
   }
   
-  // Get the domain without any path
-  const domain = process.env.NEXT_PUBLIC_SITE_URL || 'https://codepedition.com'
-  
-  // Supabase will append the path to the domain so we can't include it here
-  console.log(`Using site domain for confirmation: ${domain}`)
-
   try {
-    console.log('Starting signup process for email:', email)
-    
-    // Explicitly set the redirectTo URL with just the domain
+    // Create a new user account
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: domain + '/profile/complete'
-      }
+        data: {
+          full_name: name,
+        },
+      },
     })
-
+    
     if (error) {
-      console.error('Signup error:', error.message)
-      
-      if (error.message.includes('email already registered')) {
-        return 'This email is already registered. Try logging in instead.'
+      return { 
+        success: false, 
+        error: error.message 
       }
-      
-      return 'Signup error: ' + error.message
-    }
-
-    if (!data.user) {
-      return 'No user returned from signup'
-    }
-
-    console.log('User signed up successfully:', data.user.id)
-    
-    // Check if email confirmation is needed
-    if (data.user.identities && data.user.identities.length === 0) {
-      return 'Account already exists with this email. Please log in instead.'
     }
     
-    if (data.user.email_confirmed_at) {
-      // Email already confirmed - rare case but possible
-      return { success: true, message: 'User signed up and email already confirmed!' }
-    } else {
-      // Email confirmation required
+    // Handle email confirmation
+    if (data.user) {
       return { 
         success: true, 
-        message: 'Please check your email to confirm your account.' 
+        message: 'Account created successfully! Please check your email to confirm your account.' 
       }
     }
-  } catch (err) {
-    console.error('Unexpected error during signup:', err)
-    return 'Unexpected error during signup: ' + err
+    
+    return { 
+      success: false, 
+      error: 'An unexpected error occurred' 
+    }
+  } catch (error: any) {
+    return { 
+      success: false, 
+      error: error.message || 'An unexpected error occurred' 
+    }
+  }
+}
+
+export async function signInWithOAuth(formData: FormData) {
+  const supabase = await createClient()
+  
+  // Extract provider from form
+  const provider = formData.get('provider') as string
+  
+  if (!provider) {
+    return 'Provider is required'
+  }
+  
+  try {
+    // Supported providers: 'google', 'github'
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: provider as any,
+      options: {
+        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+      },
+    })
+    
+    if (error) {
+      return error.message
+    }
+    
+    // Redirect to the OAuth provider's page
+    if (data?.url) {
+      redirect(data.url)
+    }
+    
+    return 'Something went wrong with the OAuth provider'
+  } catch (error: any) {
+    if (error.message && (
+      error.message.includes('NEXT_REDIRECT') || 
+      error.message.includes('redirect') || 
+      error.message.includes('navigation')
+    )) {
+      // This is part of the expected OAuth flow
+      return null
+    }
+    
+    return error.message || 'An unexpected error occurred'
   }
 }

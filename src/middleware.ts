@@ -19,6 +19,7 @@ export const config = {
     '/auth/login',
     '/auth/register',
     '/auth/confirm',
-    '/auth/verified'
+    '/auth/verified',
+    '/auth/magic'
   ],
 }

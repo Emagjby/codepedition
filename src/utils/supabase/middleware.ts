@@ -34,9 +34,12 @@ export async function updateSession(request: NextRequest) {
   // from a verification link or other auth flow
   const requestUrl = new URL(request.url)
   const redirectTo = requestUrl.searchParams.get('redirectTo')
+  const passwordResetCode = requestUrl.searchParams.get('code')
   const verificationFlow = requestUrl.hash?.includes('access_token') || 
                           requestUrl.searchParams.has('access_token') ||
-                          redirectTo
+                          redirectTo ||
+                          (pathname === '/auth/update-password' && passwordResetCode) ||
+                          (pathname === '/auth/callback');
 
   // SECURITY NOTE:
   // Always use supabase.auth.getUser() to validate authentication in server code
@@ -49,8 +52,11 @@ export async function updateSession(request: NextRequest) {
     '/auth/login',
     '/auth/register',
     '/auth/forgotten-password',
+    '/auth/update-password',
     '/auth/confirm',
     '/auth/verified',
+    '/auth/magic',
+    '/auth/callback',
     '/',
     '/terms',
     '/privacy',
@@ -87,11 +93,31 @@ export async function updateSession(request: NextRequest) {
   const isAuthOnlyPath = authOnlyPaths.some(path => 
     pathname === path || pathname.startsWith(path));
 
+  // First, handle the auth-only paths separately for authenticated users
+  if (isAuthOnlyPath) {
+    try {
+      // Minimal auth check for auth-only paths
+      const { data } = await supabase.auth.getUser();
+      const user = data.user;
+      
+      // Redirect authenticated users from login/register to dashboard
+      if (user) {
+        console.log('Redirecting authenticated user from auth page to dashboard');
+        const redirectUrl = request.nextUrl.clone();
+        redirectUrl.pathname = '/dashboard';
+        return NextResponse.redirect(redirectUrl);
+      }
+    } catch (error) {
+      console.error('Error checking auth for auth-only paths:', error);
+      // Continue with normal flow if there's an error
+    }
+  }
+
   // For public paths, just skip the auth check to prevent unnecessary errors
   if (isPublicPath) {
     return supabaseResponse;
   }
-
+  
   // For non-public paths, check authentication
   let user = null;
   try {
@@ -121,16 +147,6 @@ export async function updateSession(request: NextRequest) {
       console.error('Error authenticating user:', error);
       user = null;
     }
-  }
-
-  // === REDIRECT AUTHENTICATED USERS FROM LOGIN/REGISTER ===
-  // If the user is authenticated and trying to access login or register pages,
-  // redirect them to the dashboard
-  if (user && isAuthOnlyPath) {
-    console.log('Redirecting authenticated user from auth page to dashboard');
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = '/dashboard';
-    return NextResponse.redirect(redirectUrl);
   }
 
   // === AUTHENTICATION CHECK ===
