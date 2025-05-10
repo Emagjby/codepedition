@@ -1,0 +1,5 @@
+{
+  "solid": {},
+  "dashed": { "strokeDasharray": "5,5" },
+  "dotted": { "strokeDasharray": "2,2" }
+} 
